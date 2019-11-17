@@ -1,6 +1,3 @@
 #Chicken Pi
 
-This program controls the temperature of a chicken coop by taking readings
-from temperature sensors and activating a cooling fan and heat lamp to reach
-desired temperature. It also takes readings from a ambient light intensity
-sensor and opens the door to coop at sunrise and closes at night
+ChickenPi is a raspberry pi program designed to control the temperature of a chicken coop by taking readings from DS18B20 temperature sensors and activating a cooling fan or heat lamp to reachdesired temperature. It also takes readings from a BH1750 light intensity sensor and opens the coop door at sunrise.
