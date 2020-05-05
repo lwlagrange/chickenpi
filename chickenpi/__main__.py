@@ -20,27 +20,33 @@ if __name__ == '__main__':
     while True:
         # get the current temp
         temp = env.read_temp()
+        # temp variables
+        upperTemp = 23
+        lowerTemp = 20
         # get the current light level
         light = lux.read_light()
-        # update every second
+        # light variables
+        upperLux = 300
 
-        if temp < 22:
+        if temp < lowerTemp:
             print 'heating..\n'
             GPIO.output(pins['heat'], 1)
         else:
             GPIO.output(pins['heat'], 0)
 
-        if temp > 23:
+        if temp > upperTemp:
             print 'cooling.. \n'
             GPIO.output(pins['cool'], 1)
         else:
             GPIO.output(pins['cool'], 0)
 
-        if light > 300:
+        if light > upperLux:
             GPIO.output(pins['open'], 1)
             GPIO.output(pins['close'], 1)
 
         else:
             GPIO.output(pins['open'], 0)
             GPIO.output(pins['close'], 0)
+
+        # Updated every 2 sec
         time.sleep(2)
