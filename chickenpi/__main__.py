@@ -3,6 +3,7 @@ import RPi.GPIO as GPIO
 
 from sensor import environment as env
 from sensor import light as lux
+from sensor import realtime as rtc
 
 # main init
 if __name__ == '__main__':
@@ -13,6 +14,15 @@ if __name__ == '__main__':
     # create a dictionary of the pin assignments
     pins = {'open': 31, 'close': 33, 'cool': 35, 'heat': 37}
 
+    # light variables
+    light = 0
+    upperLux = 20
+
+    # temp variables
+    temp = 0
+    upperTemp = 25
+    lowerTemp = 22
+
     # iterate through the list of pins
     for pin in pins.values():
         GPIO.setup(pin, GPIO.OUT)
@@ -20,13 +30,8 @@ if __name__ == '__main__':
     while True:
         # get the current temp
         temp = env.read_temp()
-        # temp variables
-        upperTemp = 23
-        lowerTemp = 20
         # get the current light level
         light = lux.read_light()
-        # light variables
-        upperLux = 300
 
         if temp < lowerTemp:
             print 'heating..\n'
@@ -48,5 +53,5 @@ if __name__ == '__main__':
             GPIO.output(pins['open'], 0)
             GPIO.output(pins['close'], 0)
 
-        # Updated every 2 sec
+        # Updated every 30 sec
         time.sleep(2)

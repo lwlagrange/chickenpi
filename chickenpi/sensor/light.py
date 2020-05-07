@@ -23,8 +23,6 @@ ONE_TIME_HIGH_RES_MODE_2 = 0x21
 # Start measurement at 1lx resolution. Time typically 120ms
 # Device is automatically set to Power Down after measurement.
 ONE_TIME_LOW_RES_MODE = 0x23
-
-# bus = smbus.SMBus(0) # Rev 1 Pi uses 0
 bus = smbus.SMBus(1)  # Rev 2 Pi uses 1
 
 
@@ -37,9 +35,17 @@ def convert_to_number(data):
 
 
 def read_light(addr=DEVICE):
-    # type: (object) -> object
+    count = 100  # type: int
+    light_values = [] * count
+    # take the average of 30 samples
     # Read data from I2C interface
     data = bus.read_i2c_block_data(addr, CONTINUOUS_HIGH_RES_MODE_2)
-    light = convert_to_number(data)
-    print('light: ' + str(light) + '\n')
-    return int(light)
+    if data:
+        for x in range(1, count):
+            light_values.append(convert_to_number(data))
+        # get the average of all the samples
+        light = round(sum(light_values) / len(light_values), 1)
+        print('light: ' + str(light) + '\n')
+        return light
+    print('**** Sensor did not respond ****\n')
+    return False

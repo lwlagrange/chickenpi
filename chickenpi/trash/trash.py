@@ -52,11 +52,6 @@ if __name__ == '__main__':
 
 import RPi.GPIO as GPIO
 
-# here you would put all your code for setting up GPIO,
-# we'll cover that tomorrow
-# initial values of variables etc...
-counter = 0
-
 try:
     # here you put your main loop or block of code
     while counter < 9000000:
@@ -77,9 +72,6 @@ except:
 
 finally:
     GPIO.cleanup() # this ensures a clean exit
-
-
-
 
     GPIO.setup(33, GPIO.OUT)
     # fan
