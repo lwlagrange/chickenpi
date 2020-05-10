@@ -26,7 +26,7 @@ if __name__ == '__main__':
         # get the current temp
         temp = env.read_temp()
         # get the current light level
-        light = lux.read_light()
+        # light = lux.read_light()
 
         if temp < lowerTemp:
             print 'heating..\n'
