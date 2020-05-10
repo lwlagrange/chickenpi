@@ -7,15 +7,10 @@ from sensor import realtime as rtc
 
 # main init
 if __name__ == '__main__':
-
-    # setup IO pin mode
-    GPIO.setmode(GPIO.BOARD)
-
-    # create a dictionary of the pin assignments
-    pins = {'open': 31, 'close': 33, 'cool': 35, 'heat': 37}
-
-    # light variables
-    light = 0
+    GPIO.setwarnings(False)  # Ignore warning for now
+    GPIO.setmode(GPIO.BOARD)  # setup IO pin mode
+    pins = {'button': 15, 'open': 31, 'close': 33, 'cool': 35, 'heat': 37}  # create a dictionary of the pin assignments
+    light = 0  # light variables
     upperLux = 20
 
     # temp variables
