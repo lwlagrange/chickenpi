@@ -1,46 +1,52 @@
 import time
-import RPi.GPIO as GPIO
+from gpiozero import Button, OutputDevice
 
 from sensor import environment as env
 from sensor import light as lux
+from display import display
 from sensor import realtime as rtc
 
 # main init
 if __name__ == '__main__':
 
-    def button_pushed(channel):
-        print "rising edge detected on channel: " + str(channel) + "\n"
-
-    GPIO.setwarnings(False)  # Ignore warning for now
-    GPIO.setmode(GPIO.BOARD)  # setup IO pin mode
-    outputs = {'open': 31, 'close': 33, 'cool': 35, 'heat': 37}  # create a dictionary of output pin assignments
-    inputs = {'button': 15}  # create a dictionary of input pin assignments
     light = 0  # light variables
     upperLux = 20
 
     # temp variables
     temp = 0
-    upperTemp = 20
-    lowerTemp = 18
-    nominalTemp = int(lowerTemp + ((upperTemp - lowerTemp) / 2))
+    upperTemp = 24
+    lowerTemp = 22
+    desiredTemp = lowerTemp + (upperTemp - lowerTemp)
 
-    # iterate through the list of pins
-    for pin_out in outputs.values():
-        GPIO.setup(pin_out, GPIO.OUT)
+    button = Button(23)
+    doorA = OutputDevice(6, active_high=True)
+    doorB = OutputDevice(13, active_high=True)
 
-    buttonState = 0
+    cooling = OutputDevice(19, active_high=True)
+    heating = OutputDevice(26, active_high=True)
 
-    GPIO.setup(inputs['button'], GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-    GPIO.add_event_detect(inputs['button'], GPIO.RISING, callback=button_pushed, bouncetime=300)
+
+    def button_pushed():
+        print 'Button pushed! \n'
+        doorB.toggle()
+        doorA.toggle()
 
     while True:
+        button.when_activated = button_pushed
+        # get the current light level
+        light = lux.read_light()
+
         # get the current temp
         temp = env.read_temp()
+        print 'The current temperature is: ' + str(temp)
 
-        if temp < lowerTemp:
-            print 'heating..\n'
-            print 'nominal temp is: ' + str(nominalTemp) + '\n'
-            GPIO.output(outputs['heat'], 1)
+        if int(temp) < lowerTemp:
+            print 'Heating...\n'
+            heating.on()
         else:
-            GPIO.output(outputs['heat'], 0)
+            heating.off()
+        message = 'Temperature: ' + str(temp) + '\n' + ' Desired temperature: ' + str(desiredTemp) + '\n'
+        # update the display
+        screen = display.update_text(message)
+
         time.sleep(2)
