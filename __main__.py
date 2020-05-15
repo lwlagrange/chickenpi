@@ -45,9 +45,8 @@ if __name__ == '__main__':
             heating.on()
         else:
             heating.off()
-        message = 'Temperature: ' + str(temp) + '\n' + ' Desired temperature: ' + str(desiredTemp) + '\n'
-
-        time.sleep(2)
-
+        message = 'TEMPERATURE: ' + str(temp) + '\n' + 'TARGET: ' + str(desiredTemp) + '\n'
         # update the display
         screen = display.update_text(message)
+
+        time.sleep(1)
