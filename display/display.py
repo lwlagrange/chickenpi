@@ -17,4 +17,5 @@ def update_text(OLED, message):
     draw = ImageDraw.Draw(image)
     font = ImageFont.truetype('/usr/share/fonts/truetype/Arial.ttf', 36)
     draw.text((0, 2), message['temp'], font=font, fill="White")
+    draw.text((0, 36), message['humid'], font=font, fill="White")
     OLED.OLED_ShowImage(image, 0, 0)

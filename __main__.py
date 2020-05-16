@@ -26,10 +26,12 @@ if __name__ == '__main__':
 
     screen = display.init_display()
 
+
     def button_pushed():
         print 'Button pushed! \n'
         doorB.toggle()
         doorA.toggle()
+
 
     while True:
         button.when_activated = button_pushed
@@ -37,17 +39,21 @@ if __name__ == '__main__':
         light = lux.read_light()
         # get the current temp
         temp = env.read_temp()
+        # get the humidity
+        humid = env.read_humidity()
 
         print 'The current temperature is: ' + str(temp)
+
+        print 'The current humidity is: ' + str(humid)
 
         if int(temp) < lowerTemp:
             print 'Heating...\n'
             heating.on()
         else:
             heating.off()
-
-        message = {'temp': str(temp) + ' ' + u"\u00b0" + 'C\n'}
+        # create temperature message for display
+        message = {'temp': str(temp) + ' ' + u"\u00b0" + 'C\n', 'humid': str(humid) + ' ' + u"\u0025" + '\n'}
         # update the display
         display.update_text(screen, message)
 
-        time.sleep(2)
+        time.sleep(5)
