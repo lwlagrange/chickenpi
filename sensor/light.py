@@ -39,7 +39,7 @@ def read_light(addr=DEVICE):
     light_values = [] * count
     # take the average of 30 samples
     # Read data from I2C interface
-    data = bus.read_i2c_block_data(addr, CONTINUOUS_HIGH_RES_MODE_2)
+    data = bus.read_i2c_block_data(addr, CONTINUOUS_LOW_RES_MODE)
     if data:
         for x in range(1, count):
             light_values.append(convert_to_number(data))

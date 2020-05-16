@@ -1,6 +1,5 @@
 import time
 from gpiozero import Button, OutputDevice
-
 from sensor import environment as env
 from sensor import light as lux
 from display import display
@@ -25,6 +24,7 @@ if __name__ == '__main__':
     cooling = OutputDevice(19, active_high=True)
     heating = OutputDevice(26, active_high=True)
 
+    screen = display.init_display()
 
     def button_pushed():
         print 'Button pushed! \n'
@@ -35,9 +35,9 @@ if __name__ == '__main__':
         button.when_activated = button_pushed
         # get the current light level
         light = lux.read_light()
-
         # get the current temp
         temp = env.read_temp()
+
         print 'The current temperature is: ' + str(temp)
 
         if int(temp) < lowerTemp:
@@ -45,8 +45,9 @@ if __name__ == '__main__':
             heating.on()
         else:
             heating.off()
-        message = 'TEMPERATURE: ' + str(temp) + '\n' + 'TARGET: ' + str(desiredTemp) + '\n'
-        # update the display
-        screen = display.update_text(message)
 
-        time.sleep(1)
+        message = {'temp': str(temp) + ' ' + u"\u00b0" + 'C\n'}
+        # update the display
+        display.update_text(screen, message)
+
+        time.sleep(2)
