@@ -32,8 +32,8 @@ import time
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
-OLED_RST_PIN = 25
-OLED_DC_PIN = 24
+OLED_RST_PIN = 10
+OLED_DC_PIN = 9
 OLED_CS_PIN = 8
 GPIO.setup(OLED_RST_PIN, GPIO.OUT)
 GPIO.setup(OLED_DC_PIN, GPIO.OUT)

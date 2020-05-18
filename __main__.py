@@ -3,28 +3,35 @@ from gpiozero import Button, OutputDevice
 from sensor import environment as env
 from sensor import light as lux
 from display import display
-from sensor import realtime as rtc
+import datetime
 
 # main init
 if __name__ == '__main__':
 
-    light = 0  # light variables
+    # init display
+    screen = display.init_display()
+
+    # light variables
+    light = 0
     upperLux = 20
 
     # temp variables
     temp = 0
     upperTemp = 24
     lowerTemp = 22
-    desiredTemp = lowerTemp + (upperTemp - lowerTemp)
+    desiredTemp = lowerTemp + ((upperTemp - lowerTemp)/2)
+    print 'Target Temp: ' + str(desiredTemp)
 
-    button = Button(23)
-    doorA = OutputDevice(6, active_high=True)
-    doorB = OutputDevice(13, active_high=True)
+    # button
+    button = Button(11)
 
-    cooling = OutputDevice(19, active_high=True)
-    heating = OutputDevice(26, active_high=True)
+    # actuator relays
+    doorA = OutputDevice(26, active_high=True, initial_value=False)
+    doorB = OutputDevice(19, active_high=True, initial_value=False)
 
-    screen = display.init_display()
+    # heating and cooling relays
+    cooling = OutputDevice(13, active_high=True, initial_value=False)
+    heating = OutputDevice(6, active_high=True, initial_value=False)
 
 
     def button_pushed():
@@ -34,6 +41,8 @@ if __name__ == '__main__':
 
 
     while True:
+        # get current time
+        date_time = time.strftime("%b %d %Y %H:%M")
         button.when_activated = button_pushed
         # get the current light level
         light = lux.read_light()
@@ -41,19 +50,14 @@ if __name__ == '__main__':
         temp = env.read_temp()
         # get the humidity
         humid = env.read_humidity()
-
-        print 'The current temperature is: ' + str(temp)
-
-        print 'The current humidity is: ' + str(humid)
-
         if int(temp) < lowerTemp:
             print 'Heating...\n'
             heating.on()
         else:
             heating.off()
         # create temperature message for display
-        message = {'temp': str(temp) + ' ' + u"\u00b0" + 'C\n', 'humid': str(humid) + ' ' + u"\u0025" + '\n'}
+        message = {'temp': str(temp) + ' ' + u"\u00b0" + 'C', 'humid': str(humid) + ' ' + u"\u0025", 'datetime': date_time}
         # update the display
         display.update_text(screen, message)
-
-        time.sleep(5)
+        # update every 2 sec
+        time.sleep(2)
