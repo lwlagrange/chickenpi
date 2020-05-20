@@ -25,7 +25,7 @@
 # THE SOFTWARE.
 #
 
-import DEV_Config
+from display import DEV_Config
 import RPi.GPIO as GPIO
 
 # Define the full screen height length of the display
