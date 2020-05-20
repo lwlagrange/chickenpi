@@ -39,7 +39,6 @@ async def main():
         print('temperature is: {}'.format(temp))
         humid = round((env.result()).humidity, 1)
         print('humidity is: {}'.format(humid))
-
     except Exception as e:
         print('something went wrong')
 
