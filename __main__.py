@@ -1,63 +1,61 @@
-import time
-from gpiozero import Button, OutputDevice
-from sensor import environment as env
-from sensor import light as lux
-from display import display
+#!/usr/bin/python
+import smbus2
+import bme280
+import asyncio
+import display
+import gpiozero
 import datetime
 
-# main init
-if __name__ == '__main__':
 
+async def update_display():
+    print('update the display')
     # init display
     screen = display.init_display()
-
-    # light variables
-    light = 0
-    upperLux = 20
-
-    # temp variables
-    temp = 0
-    upperTemp = 24
-    lowerTemp = 22
-    desiredTemp = lowerTemp + ((upperTemp - lowerTemp)/2)
-    print 'Target Temp: ' + str(desiredTemp)
-
-    # button
-    button = Button(11)
-
-    # actuator relays
-    doorA = OutputDevice(26, active_high=True, initial_value=False)
-    doorB = OutputDevice(19, active_high=True, initial_value=False)
-
-    # heating and cooling relays
-    cooling = OutputDevice(13, active_high=True, initial_value=False)
-    heating = OutputDevice(6, active_high=True, initial_value=False)
+    message = {'temp': str(temp) + ' ' + u"\u00b0" + 'C', 'humid': str(humid) + ' ' + u"\u0025", 'datetime': date_time}
+    # update the display
+    display.update_text(screen, message)
 
 
-    def button_pushed():
-        print 'Button pushed! \n'
-        doorB.toggle()
-        doorA.toggle()
+async def get_environment():
+    print('getting environment...')
+    port = 1
+    address = 0x76
+    bus = smbus2.SMBus(port)
+    params = bme280.load_calibration_params(bus, address)
+    data = bme280.sample(bus, address, params)
+    if data:
+        return data
+    print('Something went wrong')
 
 
-    while True:
-        # get current time
-        date_time = time.strftime("%b %d %Y %H:%M")
-        button.when_activated = button_pushed
-        # get the current light level
-        light = lux.read_light()
-        # get the current temp
-        temp = env.read_temp()
-        # get the humidity
-        humid = env.read_humidity()
-        if int(temp) < lowerTemp:
-            print 'Heating...\n'
-            heating.on()
-        else:
-            heating.off()
-        # create temperature message for display
-        message = {'temp': str(temp) + ' ' + u"\u00b0" + 'C', 'humid': str(humid) + ' ' + u"\u0025", 'datetime': date_time}
-        # update the display
-        display.update_text(screen, message)
-        # update every 2 sec
-        time.sleep(2)
+async def main():
+    # main loop
+    print('Main loop initialized')
+    try:
+        # read the environmental sensors
+        env = loop.create_task(get_environment())
+        await asyncio.wait([env])
+        temp = round((env.result()).temperature, 1)
+        print('temperature is: {}'.format(temp))
+        humid = round((env.result()).humidity, 1)
+        print('humidity is: {}'.format(humid))
+
+    except Exception as e:
+        print('something went wrong')
+
+
+# main init
+if __name__ == "__main__":
+    try:
+        print('Welcome')
+        loop = asyncio.get_event_loop()
+        loop.create_task(main())
+        loop.run_forever()
+        loop.set_debug(1)
+    except Exception as e:
+        print('errors or exceptions: ' + str(e))
+        # catch errors
+        pass
+    finally:
+        print('close program')
+        loop.close()
