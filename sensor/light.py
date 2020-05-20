@@ -29,6 +29,7 @@ bus = smbus.SMBus(1)  # Rev 2 Pi uses 1
 samples = 100  # type: int
 light_values = []
 
+
 def convert_to_number(data):
     # Simple function to convert 2 bytes of data
     # into a decimal number. Optional parameter 'decimals'

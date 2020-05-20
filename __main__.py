@@ -7,6 +7,7 @@ import asyncio
 from display import OLED_Driver
 from gpiozero import Button, OutputDevice
 from PIL import ImageDraw, Image, ImageFont
+from sensor import light as lux
 
 # ---------------------------------Configuration--------------------------------- #
 # the runtime of the actuator
@@ -17,6 +18,9 @@ upper_temp = 24
 lower_temp = 22
 # find the mean of thresholds
 desired_temp = lower_temp + ((upper_temp - lower_temp) / 2)
+# light thresholds for closing / opening the door
+lower_light = 500
+upper_light = 600
 # button
 button = Button(11)
 # door power actuator
@@ -95,6 +99,7 @@ async def main():
     while True:
         # get current time
         date_time = time.strftime("%b %d %Y %H:%M")
+        print(date_time)
         button.when_activated = btn_push
         print('Door relay power:' + str(door_power.value))
         print('Door relay A:' + str(door_a.value))
@@ -106,6 +111,12 @@ async def main():
         # assign variables and round
         temp = round((env.result()).temperature, 1)
         humid = round((env.result()).humidity, 1)
+        light = round((lux.read_light()), 1)
+        # if the ambient light exceeds the limit..
+        if light >= lower_light:
+            # open the door
+            await asyncio.create_task(button_pushed())
+
         if temp < lower_temp:
             heating.on()
             print('heating')
@@ -137,11 +148,10 @@ if __name__ == "__main__":
         loop = asyncio.get_event_loop()
         loop.create_task(main())
         loop.run_forever()
-        loop.set_debug(1)
     except Exception as e:
         print('errors or exceptions: ' + str(e))
         # catch errors
         pass
     finally:
         print('close program')
-        loop.close()
+        asyncio.get_running_loop().close()
