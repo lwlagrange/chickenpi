@@ -8,6 +8,7 @@ from display import OLED_Driver
 from gpiozero import Button, OutputDevice
 from PIL import ImageDraw, Image, ImageFont
 from sensor import light as lux
+from sensor import sunriseandset
 
 # ---------------------------------Configuration--------------------------------- #
 # the runtime of the actuator
@@ -73,14 +74,18 @@ async def get_environment():
 async def button_pushed():
     print('Button pushed! \n')
     # remove power from actuator relays
-    door_power.off()
+    if door_power.on():
+        door_power.off()
     await asyncio.sleep(0.1)
     # flip the phase
     door_a.toggle()
     door_b.toggle()
     await asyncio.sleep(0.1)
     # power it on
-    door_power.on()
+    if door_power.off():
+        door_power.on()
+    await asyncio.sleep(20)
+    door_power.off()
 
 
 def btn_push():
@@ -96,6 +101,8 @@ async def main():
     print('Main loop initialized')
     print('Target Temp: ' + str(desired_temp))
     OLED = await asyncio.create_task(init_display())
+    # get sunrise and sunset times
+    sun = sunriseandset.sunrise_sunset()
     while True:
         # get current time
         date_time = time.strftime("%b %d %Y %H:%M")
@@ -111,12 +118,17 @@ async def main():
         # assign variables and round
         temp = round((env.result()).temperature, 1)
         humid = round((env.result()).humidity, 1)
-        light = round((lux.read_light()), 1)
-        # if the ambient light exceeds the limit..
-        if light >= lower_light:
-            # open the door
-            await asyncio.create_task(button_pushed())
 
+        await asyncio.sleep(0.0001)
+        # open the door at sunrise
+        if str(sun['sunrise']) == time.strftime("%H:%M"):
+            # open the door
+            print('sunrise, opening door...')
+            await asyncio.create_task(button_pushed())
+        if str(sun['sunset']) == time.strftime("%H:%M"):
+            # close the door
+            print('sunset, closing door...')
+            await asyncio.create_task(button_pushed())
         if temp < lower_temp:
             heating.on()
             print('heating')
@@ -149,7 +161,7 @@ if __name__ == "__main__":
         loop.create_task(main())
         loop.run_forever()
     except Exception as e:
-        print('errors or exceptions: ' + str(e))
+        print('Exception: ' + str(e))
         # catch errors
         pass
     finally:

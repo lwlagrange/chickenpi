@@ -1,4 +1,4 @@
-##
+# -*- coding:UTF-8 -*-
 #  @filename   :   DEV_Config.py
 #  @brief      :   OLED hardware interface implements (GPIO, SPI)
 #  @author     :   Yehui from Waveshare

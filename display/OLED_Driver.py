@@ -53,13 +53,13 @@ D2U_R2L = 8
 SCAN_DIR_DFT = L2R_U2D
 
 
-##***********************************************************************************************************************
+# *****************************************************************************************************************
 # ------------------------------------------------------------------------
 # |\\\																#/|
 # |\\\						Drive layer								#/|
 # |\\\																#/|
 # ------------------------------------------------------------------------
-# ************************************************************************************************************************
+# *****************************************************************************************************************
 class OLED:
     def __init__(self):
         self.OLED_Dis_Column = OLED_WIDTH
@@ -154,27 +154,27 @@ class OLED:
     # ********************************************************************************
     # function:	Set the display scan and color transfer modes
     # parameter:
-    #		Scan_dir   :   Scan direction
-    #		Colorchose :   RGB or GBR color format
+    # Scan_dir: Scan direction
+    # Colorchose: RGB or GBR color format
     # ********************************************************************************
     def OLED_SetGramScanWay(self, Scan_dir):
         # Get the screen scan direction
         self.OLED_Scan_Dir = Scan_dir
         # Get GRAM and OLED width and height
-        if (Scan_dir == L2R_U2D):
+        if Scan_dir == L2R_U2D:
             self.OLED_WriteReg(0xa0)  # gment remap
             self.OLED_WriteReg(0x51)  # 51
-        elif (Scan_dir == L2R_D2U):  # Y
+        elif Scan_dir == L2R_D2U:  # Y
             self.OLED_WriteReg(0xa0)  # gment remap
             self.OLED_WriteReg(0x41)  # 51
-        elif (Scan_dir == R2L_U2D):
+        elif Scan_dir == R2L_U2D:
             self.OLED_WriteReg(0xa0)  # gment remap
             self.OLED_WriteReg(0x52)  # 51
-        elif (Scan_dir == R2L_D2U):
+        elif Scan_dir == R2L_D2U:
             self.OLED_WriteReg(0xa0)  # gment remap
             self.OLED_WriteReg(0x42)  # 51
         else:
-            print ('Scan_dir set error')
+            print('Scan_dir set error')
             return -1
 
         # Get GRAM and OLED width and height
@@ -191,10 +191,11 @@ class OLED:
 
     # /********************************************************************************
     # function:
-    #			initialization
+    # initialization
     # ********************************************************************************/
+
     def OLED_Init(self, OLED_ScanDir):
-        if (DEV_Config.GPIO_Init() != 0):
+        if DEV_Config.GPIO_Init() != 0:
             return -1
 
         # Hardware reset
@@ -214,10 +215,10 @@ class OLED:
     # /********************************************************************************
     # function:	Sets the start position and size of the display area
     # parameter:
-    #	Xstart 	:   X direction Start coordinates
-    #	Ystart  :   Y direction Start coordinates
-    #	Xend    :   X direction end coordinates
-    #	Yend    :   Y direction end coordinates
+    # Xstart:   X direction Start coordinates
+    # Ystart:   Y direction Start coordinates
+    # Xend:   X direction end coordinates
+    # Yend:   Y direction end coordinates
     # ********************************************************************************/
     def OLED_SetWindows(self, Xstart, Ystart, Xend, Yend):
         if ((Xstart > self.OLED_Dis_Column) or (Ystart > self.OLED_Dis_Page) or
@@ -234,8 +235,8 @@ class OLED:
     # /********************************************************************************
     # function:	Set the display point (Xpoint, Ypoint)
     # parameter:
-    #		xStart :   X direction Start coordinates
-    #		xEnd   :   X direction end coordinates
+    # xStart: X direction Start coordinates
+    # xEnd: X direction end coordinates
     # ********************************************************************************/
     def OLED_SetCursor(self, Xpoint, Ypoint):
         if ((Xpoint > self.OLED_Dis_Column) or (Ypoint > self.OLED_Dis_Page)):
@@ -248,44 +249,17 @@ class OLED:
         self.OLED_WriteReg(Ypoint)
         self.OLED_WriteReg(Ypoint)
 
-    '''
-	#/********************************************************************************
-	#function:	Set show color
-	#parameter: 
-	#		Color  :   Set show color
-	#********************************************************************************/
-	def OLED_SetColor(self, Color, Xpoint, Ypoint):
-		if(Xpoint > self.OLED_Dis_Column or Ypoint > self.OLED_Dis_Page):
-			return
-			
-		OLED_SetWindow(0, 0, self.OLED_Dis_Column, self.OLED_Dis_Page)
-		#1 byte control two points
-		if(Xpoint % 2 == 0):
-			Buffer[Xpoint / 2 + Ypoint * 64] = (Color << 4) | Buffer[Xpoint / 2 + Ypoint * 64]
-		else:
-			Buffer[Xpoint / 2 + Ypoint * 64] = (Color & 0x0f) | Buffer[Xpoint / 2 + Ypoint * 64]
-	
-	def OLED_Display(self):
-		
-		#write data
-		NUM = 0
-		for page in range(0, self.OLED_Dis_Page):
-			for Column in range(0, self.OLED_Dis_Column / 2):
-				self.OLED_WriteData([Buffer[NUM]])
-				NUM = NUM + 1
-	'''
-
     # /********************************************************************************
     # function:
-    #			Clear screen
+    # Clear screen
     # ********************************************************************************/
     def OLED_Clear(self):
         for i in range(0, self.OLED_Dis_Page):
-            for m in range(0, self.OLED_Dis_Column / 2):
+            for m in range(0, int(self.OLED_Dis_Column / 2)):
                 self.OLED_WriteData(0X00)
 
     def OLED_ShowImage(self, Image, Xstart, Ystart):
-        if (Image == None):
+        if Image is None:
             return
         # self.OLED_Clear(0x00)
         self.OLED_SetWindows(Xstart, Ystart, self.OLED_Dis_Column, self.OLED_Dis_Page)
@@ -297,13 +271,3 @@ class OLED:
                 Pixels_Color = ((Pixels[2 * i, j] & 0x0f) << 4) | ((Pixels[2 * i + 1, j] & 0x0f))
                 # print 'Pixels_Color',Pixels_Color
                 self.OLED_WriteData(Pixels_Color)
-                '''			
-				Pixels_Color1 = (Pixels[2 * i, j][0]  + Pixels[2 * i, j][1]  + Pixels[2 * i, j][2])/3#RGB Data
-				Pixels_Color2 = (Pixels[2 * i + 1, j][0]  + Pixels[2 * i + 1, j][1]  + Pixels[2 * i + 1, j][2] )/3#RGB Data
-				Pixels_Color8b24b1 = Pixels_Color1 * 15 /255
-				Pixels_Color8b24b2 = Pixels_Color2 * 15 /255 
-				Pixels_Color = Pixels_Color8b24b1 | (Pixels_Color8b24b2 << 4)
-				print 'Pixels_Color[1, j]',Pixels_Color
-				self.OLED_WriteData(Pixels_Color)
-				#self.OLED_SetColor(Pixels_Color , 1, 1)
-				'''
