@@ -13,7 +13,7 @@ device_folder = glob.glob(base_dir + '28*')[0]
 device_file = device_folder + '/w1_slave'
 
 
-# A function that reads the sensor data
+# A function that reads the modules data
 def read_temp_raw():
     f = open(device_file, 'r')  # Opens the temperature device file
     lines = f.readlines()  # Returns the text
@@ -21,7 +21,7 @@ def read_temp_raw():
     return lines
 
 
-# Convert the value of the sensor into a temperature
+# Convert the value of the modules into a temperature
 def read_temp():
     lines = read_temp_raw()  # Read the temperature 'device file'
 
