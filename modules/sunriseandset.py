@@ -3,8 +3,8 @@ import time
 import datetime
 import math
 
-sunrise_offset = 2
-sunset_offset = -1
+sunrise_offset = 1
+sunset_offset = 1
 
 
 def sunrise_sunset():

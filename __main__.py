@@ -117,18 +117,17 @@ async def main():
     while True:
         print(f"door state: {door_state}")
         # get current time
-        date_time = time.strftime("%b %d %Y %H:%M")
         button.when_activated = btn_push
         # read the environmental sensors
         env = await asyncio.create_task(get_environment())
         # assign variables and round
-        temp = round(env.temperature, 1)
+        temp = (round(env.temperature, 1) - 2)
         humid = round(env.humidity, 1)
         message = {
             'temp': str(temp) + ' ' + u"\u00b0" + 'C',
             'humid': str(humid) + ' ' + u"\u0025",
             'button': str(door_a.value),
-            'datetime': date_time
+            'datetime': time.strftime("%b %d %Y %-I:%M %p")
         }
         await asyncio.gather(
             cool(temp),
