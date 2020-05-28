@@ -100,7 +100,7 @@ async def auto_door():
     sunrise = str(sun['sunrise'])
     print(f'door set to open at {sunrise} and close at {sunset}')
     curr_time = time.strftime("%H:%M")
-    if curr_time == sunrise or curr_time == sunset and door_state is False:
+    if curr_time == sunrise or curr_time == sunset:
         print(f"door was automatically activated at: {curr_time}")
         await door()
 

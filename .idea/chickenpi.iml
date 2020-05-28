@@ -9,7 +9,7 @@
       <sourceFolder url="file://$MODULE_DIR$/communication" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/trash" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="Remote Python 3.7.3 (sftp://pi@192.168.11.106:22/usr/bin/python)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
